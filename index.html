@@ -2,133 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Healthy Recipe Ranker (No-Code MVP)</title>
+  <title>Healthy Recipe Ranker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ====== HEALTHY WHITE THEME ====== -->
   <style>
-    /* Healthy white theme */
     :root{
       --bg:#ffffff;
-      --panel:#f7fbf8;            /* very light green panel */
-      --muted:#5f7b6b;            /* muted green-gray text */
-      --text:#0f3d2e;             /* dark green body text */
-      --brand:#16a34a;            /* leaf green accent */
-      --ok:#15803d;               /* good score green */
-      --bad:#b91c1c;              /* soft red for warnings */
-      --border:#dbe7df;           /* pale green border */
-      --tableHead:#e9f6ee;        /* table header bg */
-      --chip:#eef7f1;             /* chip bg */
+      --panel:#f7fbf8;
+      --muted:#5f7b6b;
+      --text:#0f3d2e;
+      --brand:#16a34a;
+      --ok:#15803d;
+      --bad:#b91c1c;
+      --border:#dbe7df;
+      --tableHead:#e9f6ee;
+      --chip:#eef7f1;
       --shadow:0 10px 24px rgba(15,61,46,.08);
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
-      background:var(--bg);
-      color:var(--text);
-    }
-    header{
-      padding:28px 20px 22px;
-      text-align:center;
-      border-bottom:1px solid var(--border);
-      background:
-        radial-gradient(1200px 200px at 50% -40px, #e9f6ee 0%, rgba(233,246,238,0) 70%);
-    }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{padding:28px 20px 22px;text-align:center;border-bottom:1px solid var(--border);
+      background:radial-gradient(1200px 200px at 50% -40px, #e9f6ee 0%, rgba(233,246,238,0) 70%)}
     header h1{margin:0;font-size:28px;letter-spacing:.2px}
+    header h1::after{content:"  🌿";filter:saturate(1.2)}
     header p{margin:8px 0 0;color:var(--muted)}
     .app{max-width:1100px;margin:0 auto;padding:16px}
     .grid{display:grid;gap:16px}
     @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
-  
-    .card{
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:16px;
-      box-shadow:var(--shadow);
-    }
+
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
     h2{margin:0 0 10px;font-size:18px}
-    textarea{
-      width:100%;
-      min-height:170px;
-      background:#ffffff;
-      border:1px solid var(--border);
-      border-radius:12px;
-      color:var(--text);
-      padding:12px;
-      resize:vertical;
-      box-shadow:inset 0 1px 3px rgba(0,0,0,.03);
-    }
+    textarea{width:100%;min-height:170px;background:#fff;border:1px solid var(--border);border-radius:12px;color:var(--text);padding:12px;resize:vertical;box-shadow:inset 0 1px 3px rgba(0,0,0,.03)}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .chip{
-      display:inline-flex;gap:8px;align-items:center;
-      background:var(--chip);
-      border:1px solid var(--border);
-      color:var(--text);
-      padding:8px 10px;border-radius:999px;font-size:13px
-    }
+    .chip{display:inline-flex;gap:8px;align-items:center;background:var(--chip);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:999px;font-size:13px}
     input[type="checkbox"]{transform:scale(1.15);accent-color:var(--brand)}
-    select{
-      border:1px solid var(--border);
-      background:#fff;border-radius:10px;padding:6px 10px;color:var(--text)
-    }
-  
-    .btn{
-      background:linear-gradient(180deg,#22c55e,#16a34a);
-      border:none;color:white;padding:12px 16px;border-radius:12px;
-      font-weight:600;cursor:pointer;box-shadow:0 6px 16px rgba(22,163,74,.25)
-    }
+    select{border:1px solid var(--border);background:#fff;border-radius:10px;padding:6px 10px;color:var(--text)}
+    .btn{background:linear-gradient(180deg,#22c55e,#16a34a);border:none;color:white;padding:12px 16px;border-radius:12px;font-weight:600;cursor:pointer;box-shadow:0 6px 16px rgba(22,163,74,.25)}
     .btn:disabled{opacity:.6;cursor:not-allowed}
-    .btn.secondary{
-      background:#ffffff;color:var(--text);
-      border:1px solid var(--border);box-shadow:var(--shadow)
-    }
-  
+    .btn.secondary{background:#ffffff;color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow)}
     .muted{color:var(--muted);font-size:13px}
     .note{font-size:13px;color:#245a47}
-  
+
     .results{margin-top:16px}
-    table{
-      width:100%;border-collapse:separate;border-spacing:0;
-      background:#fff;border:1px solid var(--border);
-      border-radius:12px;overflow:hidden;box-shadow:var(--shadow)
-    }
-    th,td{padding:12px 10px;border-bottom:1px solid var(--border);
-          text-align:left;font-size:14px;vertical-align:top}
+    table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+    th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:14px;vertical-align:top}
     th{background:var(--tableHead);color:#0f3d2e;font-weight:700}
     tr:last-child td{border-bottom:none}
-  
-    .badge{
-      display:inline-block;padding:3px 8px;border-radius:999px;
-      border:1px solid var(--border);background:var(--chip);
-      color:#245a47;margin:2px;font-size:12px
-    }
+    .badge{display:inline-block;padding:3px 8px;border-radius:999px;border:1px solid var(--border);background:var(--chip);color:#245a47;margin:2px;font-size:12px}
     .score{font-weight:800}
     .score.good{color:var(--ok)}
     .score.bad{color:var(--bad)}
-  
-    details{
-      background:#ffffff;border:1px solid var(--border);
-      border-radius:10px;padding:10px
-    }
+    details{background:#ffffff;border:1px solid var(--border);border-radius:10px;padding:10px}
     summary{cursor:pointer;color:#166534;font-weight:600}
-  
-    .footer{
-      margin:24px 0 40px;text-align:center;color:var(--muted);font-size:13px
-    }
-  
-    /* fun healthy touches */
-    header h1::after{
-      content:"  🌿";
-      filter:saturate(1.2);
-    }
-    .card h2::before{
-      content:"🍏 ";
-    }
+    .footer{margin:24px 0 40px;text-align:center;color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
   <header>
-    <h1>🥗 Healthy Recipe Ranker (No-Code MVP)</h1>
+    <h1>Healthy Recipe Ranker</h1>
     <p>Paste foods, set rules, add your fridge items → generate recipes → auto-rank by health.</p>
   </header>
 
@@ -179,293 +111,236 @@ lemon</textarea>
         <button class="btn secondary" id="downloadJson" disabled>Download JSON</button>
         <button class="btn secondary" id="downloadCsv" disabled>Download CSV</button>
       </div>
-      <p class="note" style="margin-top:10px">The health score is a simple heuristic (0–100) with transparent penalties/bonuses you can tune.</p>
+      <p class="note" style="margin-top:10px">Score is a simple heuristic (0–100) with transparent penalties/bonuses below. Tweak as you like.</p>
     </section>
 
     <section class="results" id="results"></section>
 
-    <div class="footer">Built as a single static file. Host anywhere (GitHub Pages works great). No backend, no keys.</div>
+    <div class="footer">Single static file — host anywhere (GitHub Pages is perfect).</div>
   </div>
 
+  <!-- ====== APP SCRIPT ====== -->
   <script>
-    // ---------- Simple rule dictionaries ----------
+    /* ---------- Rule dictionaries & helpers ---------- */
     const SEED_OILS = new Set(["canola oil","soybean oil","corn oil","cottonseed oil","grapeseed oil","sunflower oil","safflower oil","rapeseed oil","vegetable oil","margarine"]);
     const GLUTEN_GRAINS = new Set(["wheat","barley","rye","spelt","farro","semolina","bulgur","seitan","triticale","malt","couscous"]);
     const ALL_GRAINS = new Set([...GLUTEN_GRAINS, "oats","rice","corn","quinoa","millet","sorghum","amaranth","buckwheat"]);
     const ADDED_SUGARS = new Set(["sugar","brown sugar","cane sugar","corn syrup","hfcs","dextrose","maltose","glucose","fructose","maple syrup","honey","agave"]);
     const ULTRA_HINTS = new Set(["instant","powdered","flavored","artificial","emulsifier","maltodextrin","modified starch","hydrogenated"]);
-
     const norm = s => (s||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
-
-    function containsAny(set, text){
-      const t = " " + norm(text) + " ";
-      for (const item of set){
-        if (t.includes(" " + item + " ")) return true;
-      }
-      return false;
-    }
-    function countHits(set, text){
-      const t = " " + norm(text) + " ";
-      let c = 0; for (const item of set){ if (t.includes(" " + item + " ")) c++; }
-      return c;
-    }
+    function containsAny(set, text){ const t=" "+norm(text)+" "; for(const w of set){ if(t.includes(" "+w+" ")) return true; } return false; }
+    function countHits(set, text){ const t=" "+norm(text)+" "; let c=0; for(const w of set){ if(t.includes(" "+w+" ")) c++; } return c; }
 
     function healthScore(ingredientsText, flags){
-      let score = 100;
-      const badges = [];
-      if (flags.avoidSeedOils && containsAny(SEED_OILS, ingredientsText)){ score -= 25; badges.push("Contains seed oils"); }
-      if (flags.glutenFree && containsAny(GLUTEN_GRAINS, ingredientsText)){ score -= 25; badges.push("Contains gluten"); }
-      if (flags.grainFree && containsAny(ALL_GRAINS, ingredientsText)){ score -= 20; badges.push("Contains grains"); }
-      const sugarHits = countHits(ADDED_SUGARS, ingredientsText); if (sugarHits){ score -= Math.min(20, 5*sugarHits); badges.push("Added sugar"); }
-      const ultraHits = countHits(ULTRA_HINTS, ingredientsText); if (ultraHits){ score -= Math.min(15, 3*ultraHits); badges.push("Ultra-processed hints"); }
-
-      // small bonus for nutrient-dense items
-      const bonusKeys = ["olive oil","avocado","spinach","kale","broccoli","salmon","beans","lentils","almond","walnut","chia","flax"];
-      if (bonusKeys.some(k => norm(ingredientsText).includes(k))) { score += 5; badges.push("Nutrient-dense ingredients"); }
-
-      return { score: Math.max(0, Math.min(100, score)), badges: [...new Set(badges)] };
+      let score=100; const badges=[];
+      if(flags.avoidSeedOils && containsAny(SEED_OILS, ingredientsText)){ score-=25; badges.push("Contains seed oils"); }
+      if(flags.glutenFree && containsAny(GLUTEN_GRAINS, ingredientsText)){ score-=25; badges.push("Contains gluten"); }
+      if(flags.grainFree && containsAny(ALL_GRAINS, ingredientsText)){ score-=20; badges.push("Contains grains"); }
+      const sugar=countHits(ADDED_SUGARS, ingredientsText); if(sugar){ score-=Math.min(20,5*sugar); badges.push("Added sugar"); }
+      const ultra=countHits(ULTRA_HINTS, ingredientsText); if(ultra){ score-=Math.min(15,3*ultra); badges.push("Ultra-processed hints"); }
+      const bonusKeys=["olive oil","avocado","spinach","kale","broccoli","salmon","beans","lentils","almond","walnut","chia","flax"];
+      if(bonusKeys.some(k=>norm(ingredientsText).includes(k))){ score+=5; badges.push("Nutrient-dense ingredients"); }
+      return { score: Math.max(0,Math.min(100,score)), badges:[...new Set(badges)] };
     }
 
-    <script>
-// ---------- Simple offline recipe generator (measured, detailed) ----------
-const TEMPLATES = [
-  { name: "Sheet-Pan Dinner", time: "Prep 10 min · Cook 20–25 min", serves: 4 },
-  { name: "Weeknight Stir-Fry", time: "Prep 10 min · Cook 10 min", serves: 4 },
-  { name: "Hearty Salad Bowl", time: "Prep 12 min · No cook", serves: 4 },
-  { name: "One-Pan Skillet", time: "Prep 8 min · Cook 15 min", serves: 4 },
-  { name: "Veggie Omelet/Scramble", time: "Prep 5 min · Cook 8 min", serves: 2 },
-];
+    /* ---------- Detailed measured recipe generator ---------- */
+    const TEMPLATES = [
+      { name: "Sheet-Pan Dinner", time: "Prep 10 min · Cook 20–25 min", serves: 4 },
+      { name: "Weeknight Stir-Fry", time: "Prep 10 min · Cook 10 min", serves: 4 },
+      { name: "Hearty Salad Bowl", time: "Prep 12 min · No cook", serves: 4 },
+      { name: "One-Pan Skillet", time: "Prep 8 min · Cook 15 min", serves: 4 },
+      { name: "Veggie Omelet/Scramble", time: "Prep 5 min · Cook 8 min", serves: 2 },
+    ];
+    const WORDS = {
+      protein:["chicken","salmon","shrimp","beef","turkey","tofu","tempeh","tuna","eggs"],
+      veg:["broccoli","spinach","kale","zucchini","pepper","bell pepper","onion","tomato","carrot","mushroom","cucumber","arugula","lettuce"],
+      aromatic:["garlic","ginger","scallion","green onion","basil","cilantro","parsley","dill","oregano","thyme","rosemary"],
+      grain:["rice","quinoa","oats","pasta","spaghetti","noodle","couscous","farro","barley"],
+      fats_good:["olive oil","avocado oil","ghee","coconut oil","butter"],
+      fats_seed:["canola oil","soybean oil","vegetable oil","sunflower oil","safflower oil","grapeseed oil","corn oil"],
+      acids:["lemon","lime","vinegar","balsamic","red wine vinegar","apple cider vinegar"],
+      sauces:["soy sauce","tamari","hot sauce","mustard","yogurt","tahini","sesame oil","honey","maple syrup"],
+      nuts_seeds:["almond","walnut","pecan","pumpkin seed","sunflower seed","chia","flax","sesame"]
+    };
+    const uniqList = list => [...new Set(list.map(s=>s.toLowerCase().trim()).filter(Boolean))];
 
-const WORDS = {
-  protein: ["chicken","salmon","shrimp","beef","turkey","tofu","tempeh","tuna","eggs"],
-  veg: ["broccoli","spinach","kale","zucchini","pepper","bell pepper","onion","tomato","carrot","mushroom","cucumber","arugula","lettuce"],
-  aromatic: ["garlic","ginger","scallion","green onion","basil","cilantro","parsley","dill","oregano","thyme","rosemary"],
-  grain: ["rice","quinoa","oats","pasta","spaghetti","noodle","couscous","farro","barley"],
-  fats_good: ["olive oil","avocado oil","ghee","coconut oil","butter"],
-  fats_seed: ["canola oil","soybean oil","vegetable oil","sunflower oil","safflower oil","grapeseed oil","corn oil"],
-  acids: ["lemon","lime","vinegar","balsamic","red wine vinegar","apple cider vinegar"],
-  sauces: ["soy sauce","tamari","hot sauce","mustard","yogurt","tahini","sesame oil","honey","maple syrup"],
-  nuts_seeds: ["almond","walnut","pecan","pumpkin seed","sunflower seed","chia","flax","sesame"]
-};
-
-function normalizeList(list){
-  return [...new Set(list.map(s => s.toLowerCase().trim()).filter(Boolean))];
-}
-
-// map an ingredient keyword to a default measured line
-function measureLine(item, flags){
-  const s = item.toLowerCase();
-  // proteins
-  if (s.includes("chicken")) return "1 lb (450 g) chicken, cut into 1-inch pieces";
-  if (s.includes("salmon"))  return "1 lb (450 g) salmon, cut into 4 portions";
-  if (s.includes("shrimp"))  return "1 lb (450 g) shrimp, peeled";
-  if (s.includes("beef"))    return "12 oz (340 g) beef, thinly sliced";
-  if (s.includes("turkey"))  return "12 oz (340 g) ground turkey";
-  if (s.includes("tofu"))    return "14 oz (400 g) firm tofu, cubed";
-  if (s.includes("tempeh"))  return "8 oz (225 g) tempeh, cubed";
-  if (s.includes("tuna"))    return "1 can tuna (5 oz/142 g), drained";
-  if (s === "eggs" || s.includes("egg")) return "4 eggs";
-
-  // vegetables
-  if (s.includes("broccoli")) return "3 cups broccoli florets (about 10 oz/280 g)";
-  if (s.includes("spinach"))  return "5 cups baby spinach (5 oz/140 g)";
-  if (s.includes("kale"))     return "4 cups chopped kale, ribs removed";
-  if (s.includes("zucchini")) return "2 medium zucchini, sliced";
-  if (s.includes("pepper"))   return "2 bell peppers, sliced";
-  if (s.includes("onion"))    return "1 medium onion, sliced";
-  if (s.includes("tomato"))   return "2 medium tomatoes, chopped";
-  if (s.includes("carrot"))   return "2 medium carrots, sliced";
-  if (s.includes("mushroom")) return "8 oz (225 g) mushrooms, sliced";
-  if (s.includes("cucumber")) return "1 large cucumber, chopped";
-  if (s.includes("arugula"))  return "5 cups arugula";
-  if (s.includes("lettuce"))  return "6 cups chopped romaine or mixed greens";
-
-  // aromatics / herbs
-  if (s.includes("garlic"))   return "2–3 cloves garlic, minced";
-  if (s.includes("ginger"))   return "1 tbsp fresh ginger, minced";
-  if (s.includes("scallion") || s.includes("green onion")) return "3 scallions, sliced";
-  if (["basil","cilantro","parsley","dill","oregano","thyme","rosemary"].some(k=>s.includes(k)))
-    return `2 tbsp chopped ${s}`;
-
-  // grains / starches
-  if (s.includes("quinoa"))   return "1 cup quinoa (uncooked), rinsed";
-  if (s.includes("rice"))     return "1 cup rice (uncooked), rinsed";
-  if (s.includes("oats"))     return "1 cup rolled oats";
-  if (s.includes("pasta") || s.includes("spaghetti") || s.includes("noodle")) return "8 oz (225 g) pasta/noodles";
-
-  // oils & acids
-  if (s.includes("olive oil"))   return "2 tbsp extra-virgin olive oil";
-  if (s.includes("avocado oil")) return "2 tbsp avocado oil";
-  if (s.includes("ghee"))        return "1 tbsp ghee";
-  if (s.includes("coconut oil")) return "1 tbsp coconut oil";
-  if (s.includes("butter"))      return "1–2 tbsp butter";
-  if (s.includes("lemon"))       return "1 lemon (zest + 2 tbsp juice)";
-  if (s.includes("lime"))        return "1 lime (2 tbsp juice)";
-  if (s.includes("vinegar"))     return "1–2 tbsp vinegar (to taste)";
-
-  // sauces / sweeteners
-  if (s.includes("soy sauce"))   return flags?.glutenFree ? "2 tbsp tamari (gluten-free soy sauce)" : "2 tbsp soy sauce";
-  if (s.includes("tamari"))      return "2 tbsp tamari";
-  if (s.includes("tahini"))      return "2 tbsp tahini";
-  if (s.includes("yogurt"))      return "1/3 cup plain yogurt";
-  if (s.includes("sesame oil"))  return "1 tsp toasted sesame oil";
-  if (s.includes("hot sauce"))   return "1–2 tsp hot sauce";
-  if (s.includes("mustard"))     return "2 tsp Dijon mustard";
-  if (s.includes("honey"))       return "1–2 tsp honey";
-  if (s.includes("maple syrup")) return "1–2 tsp maple syrup";
-
-  // nuts & seeds
-  if (["almond","walnut","pecan","pumpkin seed","sunflower seed","chia","flax","sesame"].some(k=>s.includes(k)))
-    return `1/4 cup ${s}, chopped`;
-
-  // default
-  return s;
-}
-
-// choose a cooking fat that respects "avoid seed oils"
-function pickCookingFat(pantryPlusCatalog, flags){
-  const pool = normalizeList(pantryPlusCatalog);
-  const good = pool.find(x => WORDS.fats_good.some(k => x.includes(k)));
-  const seed = pool.find(x => WORDS.fats_seed.some(k => x.includes(k)));
-  if (flags?.avoidSeedOils) return measureLine(good || "olive oil");
-  return measureLine(good || seed || "olive oil");
-}
-
-// utility: pick items from available list by keyword set
-function pickByKeywords(available, keywords, max = 2, exclude=[]) {
-  const out = [];
-  for (const item of available){
-    const s = item.toLowerCase();
-    if (exclude.some(e => s.includes(e))) continue;
-    if (keywords.some(k => s.includes(k))) out.push(item);
-    if (out.length >= max) break;
-  }
-  return out;
-}
-
-function generateMeasuredRecipes(pantry, catalog, n, flags){
-  const avail = normalizeList([...pantry, ...catalog]);
-
-  const recipes = [];
-  for (let i = 0; i < n; i++){
-    const tpl = TEMPLATES[i % TEMPLATES.length];
-
-    // picks
-    const proteins = pickByKeywords(avail, WORDS.protein, 1);
-    const vegs     = pickByKeywords(avail, WORDS.veg, 3);
-    const herbs    = pickByKeywords(avail, WORDS.aromatic, 2);
-    let grains     = flags?.grainFree ? [] : pickByKeywords(avail, WORDS.grain, 1);
-
-    // avoid gluten grains if gluten-free
-    if (flags?.glutenFree) {
-      grains = grains.filter(g => !/(wheat|barley|rye|pasta|spaghetti|couscous|farro|barley)/.test(g));
+    function measureLine(item, flags){
+      const s=(item||"").toLowerCase();
+      // proteins
+      if(s.includes("chicken")) return "1 lb (450 g) chicken, cut into 1-inch pieces";
+      if(s.includes("salmon"))  return "1 lb (450 g) salmon, cut into 4 portions";
+      if(s.includes("shrimp"))  return "1 lb (450 g) shrimp, peeled";
+      if(s.includes("beef"))    return "12 oz (340 g) beef, thinly sliced";
+      if(s.includes("turkey"))  return "12 oz (340 g) ground turkey";
+      if(s.includes("tofu"))    return "14 oz (400 g) firm tofu, cubed";
+      if(s.includes("tempeh"))  return "8 oz (225 g) tempeh, cubed";
+      if(s.includes("tuna"))    return "1 can tuna (5 oz/142 g), drained";
+      if(s==="eggs"||s.includes("egg")) return "4 eggs";
+      // vegetables
+      if(s.includes("broccoli")) return "3 cups broccoli florets (about 10 oz/280 g)";
+      if(s.includes("spinach"))  return "5 cups baby spinach (5 oz/140 g)";
+      if(s.includes("kale"))     return "4 cups chopped kale, ribs removed";
+      if(s.includes("zucchini")) return "2 medium zucchini, sliced";
+      if(s.includes("pepper"))   return "2 bell peppers, sliced";
+      if(s.includes("onion"))    return "1 medium onion, sliced";
+      if(s.includes("tomato"))   return "2 medium tomatoes, chopped";
+      if(s.includes("carrot"))   return "2 medium carrots, sliced";
+      if(s.includes("mushroom")) return "8 oz (225 g) mushrooms, sliced";
+      if(s.includes("cucumber")) return "1 large cucumber, chopped";
+      if(s.includes("arugula"))  return "5 cups arugula";
+      if(s.includes("lettuce"))  return "6 cups chopped romaine or mixed greens";
+      // aromatics/herbs
+      if(s.includes("garlic"))   return "2–3 cloves garlic, minced";
+      if(s.includes("ginger"))   return "1 tbsp fresh ginger, minced";
+      if(s.includes("scallion")||s.includes("green onion")) return "3 scallions, sliced";
+      if(["basil","cilantro","parsley","dill","oregano","thyme","rosemary"].some(k=>s.includes(k))) return `2 tbsp chopped ${s}`;
+      // grains
+      if(s.includes("quinoa"))   return "1 cup quinoa (uncooked), rinsed";
+      if(s.includes("rice"))     return "1 cup rice (uncooked), rinsed";
+      if(s.includes("oats"))     return "1 cup rolled oats";
+      if(s.includes("pasta")||s.includes("spaghetti")||s.includes("noodle")) return "8 oz (225 g) pasta/noodles";
+      // oils & acids
+      if(s.includes("olive oil"))   return "2 tbsp extra-virgin olive oil";
+      if(s.includes("avocado oil")) return "2 tbsp avocado oil";
+      if(s.includes("ghee"))        return "1 tbsp ghee";
+      if(s.includes("coconut oil")) return "1 tbsp coconut oil";
+      if(s.includes("butter"))      return "1–2 tbsp butter";
+      if(s.includes("lemon"))       return "1 lemon (zest + 2 tbsp juice)";
+      if(s.includes("lime"))        return "1 lime (2 tbsp juice)";
+      if(s.includes("vinegar"))     return "1–2 tbsp vinegar (to taste)";
+      // sauces
+      if(s.includes("soy sauce"))   return flags?.glutenFree ? "2 tbsp tamari (gluten-free soy sauce)" : "2 tbsp soy sauce";
+      if(s.includes("tamari"))      return "2 tbsp tamari";
+      if(s.includes("tahini"))      return "2 tbsp tahini";
+      if(s.includes("yogurt"))      return "1/3 cup plain yogurt";
+      if(s.includes("sesame oil"))  return "1 tsp toasted sesame oil";
+      if(s.includes("hot sauce"))   return "1–2 tsp hot sauce";
+      if(s.includes("mustard"))     return "2 tsp Dijon mustard";
+      if(s.includes("honey"))       return "1–2 tsp honey";
+      if(s.includes("maple syrup")) return "1–2 tsp maple syrup";
+      // nuts & seeds
+      if(["almond","walnut","pecan","pumpkin seed","sunflower seed","chia","flax","sesame"].some(k=>s.includes(k))) return `1/4 cup ${s}, chopped`;
+      return s;
     }
 
-    const fat = pickCookingFat(avail, flags);
-    const acid = measureLine( pickByKeywords(avail, WORDS.acids, 1)[0] || "lemon", flags );
-    const sauce = measureLine( pickByKeywords(avail, WORDS.sauces, 1)[0] || (flags?.glutenFree ? "tamari" : "soy sauce"), flags );
-    const crunch = measureLine( pickByKeywords(avail, WORDS.nuts_seeds, 1)[0] || "", flags );
-
-    // build ingredient list with measurements
-    const ingRaw = [
-      ...proteins, ...vegs, ...herbs,
-      ...grains,
-      fat, acid, sauce, crunch
-    ].filter(Boolean);
-
-    const ingredients = ingRaw.map(x => measureLine(x, flags));
-
-    // steps by template
-    let steps;
-    if (tpl.name.includes("Sheet-Pan")){
-      steps = [
-        "Preheat oven to 425°F (220°C). Line a large sheet pan with parchment.",
-        `In a bowl, toss ${proteins[0] ? "protein, " : ""}${vegs.slice(0,2).join(", ")} with ${fat.toLowerCase()} and 1 tsp salt, 1/2 tsp pepper.`,
-        "Spread on sheet pan in a single layer.",
-        "Roast 18–25 minutes, until veggies are browned and protein is cooked through.",
-        `Finish with ${acid.toLowerCase()} and ${sauce.toLowerCase()}. Sprinkle herbs${
-          crunch ? " and " + crunch.toLowerCase() : ""
-        }.`
-      ];
-    } else if (tpl.name.includes("Stir-Fry")){
-      steps = [
-        `Cook ${grains[0] ? measureLine(grains[0], flags).replace("(uncooked)","").replace("1 cup ","") + " according to package (optional)." : "optional rice/quinoa if using."}`,
-        `Heat a large skillet or wok over high. Add ${fat.toLowerCase()}.`,
-        `${proteins[0] ? "Stir-fry protein 3–4 min; remove to a plate. " : ""}Add firm veg (e.g., broccoli, carrot); cook 2–3 min.`,
-        "Add quick-cook veg (pepper, spinach, mushrooms) and aromatics; cook 2–3 min.",
-        `Return protein (if using); toss with ${sauce.toLowerCase()} and a splash of ${acid.toLowerCase()}. Taste and season.`
-      ];
-    } else if (tpl.name.includes("Salad")){
-      steps = [
-        "In a small jar, combine dressing: " + `${acid.toLowerCase()}, ${fat.toLowerCase()}, 1 tsp Dijon or honey (optional), 1/2 tsp salt.` ,
-        "Chop veggies and herbs; add to a large bowl.",
-        proteins[0] ? "Cook or open protein if needed; slice or flake." : "Add legumes/nuts for protein if desired.",
-        "Toss greens with half the dressing. Top with veg, protein, and remaining dressing.",
-        crunch ? `Finish with ${crunch.toLowerCase()}.` : "Finish with extra herbs."
-      ];
-    } else if (tpl.name.includes("Skillet")){
-      steps = [
-        `Heat a large skillet over medium-high; add ${fat.toLowerCase()}.`,
-        `${proteins[0] ? "Brown protein 4–6 min; remove to a plate. " : ""}Sauté onions/firm veg 3–4 min.`,
-        "Add remaining veg and aromatics; cook 2–3 min until tender.",
-        `Stir in ${sauce.toLowerCase()} and ${acid.toLowerCase()}; return protein and toss.`
-      ];
-    } else { // Omelet/Scramble
-      steps = [
-        `Whisk ${measureLine("eggs")} with 1/4 tsp salt.`,
-        `Sauté chopped veg in ${fat.toLowerCase()} 2–3 min.`,
-        "Add eggs; cook, stirring for scramble or set edges for omelet. Add herbs and serve."
-      ];
+    function pickCookingFat(all, flags){
+      const pool = uniqList(all);
+      const good = pool.find(x => WORDS.fats_good.some(k=>x.includes(k)));
+      const seed = pool.find(x => WORDS.fats_seed.some(k=>x.includes(k)));
+      return measureLine(flags?.avoidSeedOils ? (good||"olive oil") : (good||seed||"olive oil"), flags);
     }
 
-    // title
-    const main = proteins[0] || vegs[0] || "Pantry";
-    const titleMain = (main.charAt(0).toUpperCase() + main.slice(1)).replace(/\b\w/g, c => c.toUpperCase());
-    recipes.push({
-      title: `${titleMain} ${tpl.name}`,
-      ingredients,
-      steps,
-      notes: `${tpl.time} · Serves ${tpl.serves}`,
-    });
-  }
+    function pickByKeywords(all, keywords, max=2, exclude=[]){
+      const out=[]; for(const item of all){ const s=item.toLowerCase();
+        if(exclude.some(e=>s.includes(e))) continue;
+        if(keywords.some(k=>s.includes(k))) out.push(item);
+        if(out.length>=max) break;
+      } return out;
+    }
 
-  return recipes;
-}
-</script>
-    const el = id => document.getElementById(id);
-    const catalogInput = el("catalogInput");
-    const pantryInput  = el("pantryInput");
-    const avoidSeedOils = el("avoidSeedOils");
-    const glutenFree = el("glutenFree");
-    const grainFree = el("grainFree");
-    const countSel = el("count");
-    const generateBtn = el("generateBtn");
-    const results = el("results");
-    const downloadJsonBtn = el("downloadJson");
-    const downloadCsvBtn = el("downloadCsv");
+    function generateMeasuredRecipes(pantry, catalog, n, flags){
+      const avail = uniqList([...(pantry||[]), ...(catalog||[])]);
+      const recipes=[];
+      for(let i=0;i<n;i++){
+        const tpl=TEMPLATES[i%TEMPLATES.length];
+        const proteins = pickByKeywords(avail, WORDS.protein, 1);
+        const vegs     = pickByKeywords(avail, WORDS.veg, 3);
+        const herbs    = pickByKeywords(avail, WORDS.aromatic, 2);
+        let grains     = flags?.grainFree ? [] : pickByKeywords(avail, WORDS.grain, 1);
+        if(flags?.glutenFree){
+          grains = grains.filter(g => !/(wheat|barley|rye|pasta|spaghetti|couscous|farro|barley)/.test(g));
+        }
+        const fat = pickCookingFat(avail, flags);
+        const acid = measureLine(pickByKeywords(avail, WORDS.acids, 1)[0] || "lemon", flags);
+        const sauce = measureLine(pickByKeywords(avail, WORDS.sauces, 1)[0] || (flags?.glutenFree ? "tamari" : "soy sauce"), flags);
+        const crunch = measureLine(pickByKeywords(avail, WORDS.nuts_seeds, 1)[0] || "", flags);
 
-    let lastData = [];
+        const ingRaw=[...proteins,...vegs,...herbs,...grains,fat,acid,sauce,crunch].filter(Boolean);
+        const ingredients = ingRaw.map(x=>measureLine(x, flags));
+
+        let steps=[];
+        if(tpl.name.includes("Sheet-Pan")){
+          steps=[
+            "Preheat oven to 425°F (220°C). Line a large sheet pan with parchment.",
+            `In a bowl, toss ${proteins[0]?"protein, ":""}${vegs.slice(0,2).join(", ")} with ${fat.toLowerCase()} and 1 tsp salt, 1/2 tsp pepper.`,
+            "Spread on sheet pan in a single layer.",
+            "Roast 18–25 minutes, until veggies are browned and protein is cooked through.",
+            `Finish with ${acid.toLowerCase()} and ${sauce.toLowerCase()}.${crunch?" Sprinkle "+crunch.toLowerCase()+".":""}`
+          ];
+        } else if(tpl.name.includes("Stir-Fry")){
+          steps=[
+            `${grains[0]?measureLine(grains[0],flags).replace("(uncooked)","").replace("1 cup ","")+" according to package (optional).":"Optional: cook rice/quinoa if using."}`,
+            `Heat a large skillet or wok over high. Add ${fat.toLowerCase()}.`,
+            `${proteins[0]?"Stir-fry protein 3–4 min; remove to a plate. ":""}Add firm veg (e.g., broccoli, carrot); cook 2–3 min.`,
+            "Add quick-cook veg and aromatics; cook 2–3 min.",
+            `Return protein (if using); toss with ${sauce.toLowerCase()} and a splash of ${acid.toLowerCase()}. Taste and season.`
+          ];
+        } else if(tpl.name.includes("Salad")){
+          steps=[
+            "In a small jar, make dressing: "+`${acid.toLowerCase()}, ${fat.toLowerCase()}, 1 tsp Dijon or honey (optional), 1/2 tsp salt.`,
+            "Chop veggies and herbs; add to a large bowl.",
+            proteins[0]?"Cook or open protein if needed; slice or flake.":"Add legumes/nuts for protein if desired.",
+            "Toss greens with half the dressing. Top with veg, protein, and remaining dressing.",
+            crunch?`Finish with ${crunch.toLowerCase()}.`:"Finish with extra herbs."
+          ];
+        } else if(tpl.name.includes("One-Pan")){
+          steps=[
+            `Heat a large skillet over medium-high; add ${fat.toLowerCase()}.`,
+            `${proteins[0]?"Brown protein 4–6 min; remove to a plate. ":""}Sauté onions/firm veg 3–4 min.`,
+            "Add remaining veg and aromatics; cook 2–3 min until tender.",
+            `Stir in ${sauce.toLowerCase()} and ${acid.toLowerCase()}; return protein and toss.`
+          ];
+        } else { // Omelet/Scramble
+          steps=[
+            `Whisk 4 eggs with 1/4 tsp salt.`,
+            `Sauté chopped veg in ${fat.toLowerCase()} 2–3 min.`,
+            "Add eggs; cook, stirring for scramble or set edges for omelet. Add herbs and serve."
+          ];
+        }
+
+        const main = proteins[0] || vegs[0] || "Pantry";
+        const titleMain = main.replace(/\b\w/g, c => c.toUpperCase());
+        recipes.push({
+          title: `${titleMain} ${tpl.name}`,
+          ingredients,
+          steps,
+          notes: `${tpl.time} · Serves ${tpl.serves}`
+        });
+      }
+      return recipes;
+    }
+
+    /* ---------- UI wiring & rendering ---------- */
+    const $ = id => document.getElementById(id);
+    const catalogInput = $("catalogInput");
+    const pantryInput  = $("pantryInput");
+    const avoidSeedOils = $("avoidSeedOils");
+    const glutenFree = $("glutenFree");
+    const grainFree = $("grainFree");
+    const countSel = $("count");
+    const generateBtn = $("generateBtn");
+    const results = $("results");
+    const downloadJsonBtn = $("downloadJson");
+    const downloadCsvBtn = $("downloadCsv");
+    let lastData=[];
 
     function renderTable(rows){
-      if (!rows.length){
-        results.innerHTML = '<div class="card"><p class="muted">No results yet. Click “Generate & Rank”.</p></div>';
-        return;
-      }
-      const rowsHtml = rows.map(r => {
-        const scoreClass = r.score >= 75 ? 'good' : (r.score < 50 ? 'bad' : '');
-        const badges = r.badges.map(b => `<span class="badge">${b}</span>`).join('') || '<span class="muted">—</span>';
-        const ing = r.ingredients.join(", ");
+      if(!rows.length){ results.innerHTML='<div class="card"><p class="muted">No results yet. Click “Generate & Rank”.</p></div>'; return; }
+      const rowsHtml = rows.map(r=>{
+        const scoreClass = r.score>=75?'good':(r.score<50?'bad':'');
+        const badges = r.badges.map(b=>`<span class="badge">${b}</span>`).join('')||'<span class="muted">—</span>';
+        const ings = r.ingredients.join(", ");
         const steps = r.steps.map((s,i)=>`${i+1}. ${s}`).join("<br>");
         return `
           <tr>
-            <td><div style="font-weight:600">${r.title}</div><div class="muted">${r.notes||""}</div></td>
+            <td><div style="font-weight:700">${r.title}</div><div class="muted">${r.notes||""}</div></td>
             <td class="score ${scoreClass}">${r.score}</td>
             <td>${badges}</td>
             <td>
               <details>
                 <summary>View</summary>
                 <div style="margin-top:8px">
-                  <strong>Ingredients:</strong> ${ing || "—"}<br><br>
+                  <strong>Ingredients:</strong> ${ings || "—"}<br><br>
                   <strong>Steps:</strong><br>${steps || "—"}
                 </div>
               </details>
@@ -473,7 +348,6 @@ function generateMeasuredRecipes(pantry, catalog, n, flags){
           </tr>
         `;
       }).join("");
-
       results.innerHTML = `
         <div class="card">
           <h2 style="margin-bottom:8px">📊 Ranked Recipes</h2>
@@ -486,60 +360,37 @@ function generateMeasuredRecipes(pantry, catalog, n, flags){
     }
 
     function toCSV(arr){
-      const headers = ["title","score","badges","ingredients","steps","notes"];
+      const headers=["title","score","badges","ingredients","steps","notes"];
       const esc = s => `"${String(s).replace(/"/g,'""')}"`;
-      const lines = [headers.join(",")];
-      for (const r of arr){
-        lines.push([
-          esc(r.title),
-          r.score,
-          esc(r.badges.join(" | ")),
-          esc(r.ingredients.join(" | ")),
-          esc(r.steps.join(" | ")),
-          esc(r.notes||"")
-        ].join(","));
+      const lines=[headers.join(",")];
+      for(const r of arr){
+        lines.push([esc(r.title),r.score,esc(r.badges.join(" | ")),esc(r.ingredients.join(" | ")),esc(r.steps.join(" | ")),esc(r.notes||"")].join(","));
       }
       return lines.join("\n");
     }
+    function download(filename,content,mime){ const blob=new Blob([content],{type:mime}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url); }
 
-    function download(filename, content, mime){
-      const blob = new Blob([content], {type: mime});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = filename; a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    generateBtn.addEventListener("click", () => {
+    generateBtn.addEventListener("click", ()=>{
       const catalog = catalogInput.value.split("\n").map(s=>s.trim()).filter(Boolean);
       const pantry  = pantryInput.value.split("\n").map(s=>s.trim()).filter(Boolean);
-      const flags = {
-        avoidSeedOils: avoidSeedOils.checked,
-        glutenFree: glutenFree.checked,
-        grainFree: grainFree.checked
-      };
-      const n = parseInt(countSel.value, 10) || 4;
+      const flags = { avoidSeedOils: avoidSeedOils.checked, glutenFree: glutenFree.checked, grainFree: grainFree.checked };
+      const n = parseInt(countSel.value,10)||4;
 
       const recipes = generateMeasuredRecipes(pantry, catalog, n, flags);
-      const scored = recipes.map(r => {
-        const ingText = r.ingredients.join(", ");
-        const s = healthScore(ingText, flags);
-        return { ...r, score: s.score, badges: s.badges };
+      const scored = recipes.map(r=>{
+        const ingText=r.ingredients.join(", ");
+        const s=healthScore(ingText, flags);
+        return {...r, score:s.score, badges:s.badges};
       }).sort((a,b)=>b.score-a.score);
 
-      lastData = scored;
-      renderTable(scored);
-      downloadJsonBtn.disabled = downloadCsvBtn.disabled = scored.length === 0;
+      lastData=scored; renderTable(scored);
+      downloadJsonBtn.disabled = downloadCsvBtn.disabled = scored.length===0;
     });
 
-    downloadJsonBtn.addEventListener("click", ()=>{
-      download("recipes_ranked.json", JSON.stringify(lastData, null, 2), "application/json");
-    });
-    downloadCsvBtn.addEventListener("click", ()=>{
-      download("recipes_ranked.csv", toCSV(lastData), "text/csv");
-    });
+    downloadJsonBtn.addEventListener("click", ()=>download("recipes_ranked.json", JSON.stringify(lastData,null,2), "application/json"));
+    downloadCsvBtn.addEventListener("click", ()=>download("recipes_ranked.csv", toCSV(lastData), "text/csv"));
 
-    // Initial placeholder state
+    // initial placeholder
     renderTable([]);
   </script>
 </body>
