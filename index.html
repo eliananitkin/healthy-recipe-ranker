@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Healthy Recipe Ranker (No-Code MVP)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{--bg:#0b1220;--panel:#101827;--muted:#94a3b8;--text:#e5e7eb;--brand:#60a5fa;--ok:#22c55e;--bad:#ef4444;--card:#0f172a;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#0b1220,#0a0f1a);color:var(--text)}
+    header{padding:28px 20px;text-align:center}
+    header h1{margin:0;font-size:28px;letter-spacing:.2px}
+    header p{margin:8px 0 0;color:var(--muted)}
+    .app{max-width:1100px;margin:0 auto;padding:16px}
+    .grid{display:grid;gap:16px}
+    @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+    .card{background:linear-gradient(180deg,#0e1627,#0b1220);border:1px solid #1f2a44;border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    h2{margin:0 0 10px;font-size:18px}
+    textarea{width:100%;min-height:170px;background:#0a1222;border:1px solid #1c2640;border-radius:12px;color:var(--text);padding:12px;resize:vertical}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .chip{display:inline-flex;gap:8px;align-items:center;background:#0b162d;border:1px solid #1c2d4f;color:#c7d2fe;padding:8px 10px;border-radius:999px;font-size:13px}
+    input[type="checkbox"]{transform:scale(1.15);accent-color:var(--brand)}
+    .btn{background:linear-gradient(180deg,#2563eb,#1d4ed8);border:none;color:white;padding:12px 16px;border-radius:12px;font-weight:600;cursor:pointer}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .btn.secondary{background:#17223a;border:1px solid #263654}
+    .muted{color:var(--muted);font-size:13px}
+    .note{font-size:13px;color:#cbd5e1}
+    .results{margin-top:16px}
+    table{width:100%;border-collapse:separate;border-spacing:0;background:#0b1220;border:1px solid #1c2d4f;border-radius:12px;overflow:hidden}
+    th,td{padding:12px 10px;border-bottom:1px solid #152441;text-align:left;font-size:14px;vertical-align:top}
+    th{background:#0f1a31;color:#c7d2fe;font-weight:600}
+    tr:last-child td{border-bottom:none}
+    .badge{display:inline-block;padding:3px 8px;border-radius:999px;border:1px solid #283a5f;color:#cbd5e1;margin:2px;font-size:12px}
+    .score{font-weight:700}
+    .score.good{color:var(--ok)}
+    .score.bad{color:var(--bad)}
+    details{background:#0a1428;border:1px solid #1a2a48;border-radius:10px;padding:10px}
+    summary{cursor:pointer;color:#bfdbfe}
+    .footer{margin:24px 0 40px;text-align:center;color:#8aa0c8;font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🥗 Healthy Recipe Ranker (No-Code MVP)</h1>
+    <p>Paste foods, set rules, add your fridge items → generate recipes → auto-rank by health.</p>
+  </header>
+
+  <div class="app">
+    <div class="grid">
+      <section class="card">
+        <h2>📥 Food Catalog</h2>
+        <p class="muted">One item per line (e.g., chicken breast, olive oil, broccoli, rice…)</p>
+        <textarea id="catalogInput">chicken breast
+salmon
+broccoli
+spinach
+olive oil
+eggs
+rice
+oats
+butter
+soybean oil</textarea>
+      </section>
+
+      <section class="card">
+        <h2>🧊 What’s in your fridge/pantry today?</h2>
+        <p class="muted">One item per line.</p>
+        <textarea id="pantryInput">chicken breast
+spinach
+olive oil
+garlic
+tomato
+onion
+lemon</textarea>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <h2>⚙️ Health Rules</h2>
+      <div class="row" style="margin:8px 0 10px">
+        <label class="chip"><input type="checkbox" id="avoidSeedOils" checked> Avoid seed oils</label>
+        <label class="chip"><input type="checkbox" id="glutenFree"> Gluten-free</label>
+        <label class="chip"><input type="checkbox" id="grainFree"> Grain-free</label>
+      </div>
+      <div class="row">
+        <label class="chip">How many recipes:
+          <select id="count">
+            <option>3</option><option selected>4</option><option>5</option><option>6</option><option>8</option><option>10</option>
+          </select>
+        </label>
+        <button class="btn" id="generateBtn">Generate & Rank</button>
+        <button class="btn secondary" id="downloadJson" disabled>Download JSON</button>
+        <button class="btn secondary" id="downloadCsv" disabled>Download CSV</button>
+      </div>
+      <p class="note" style="margin-top:10px">The health score is a simple heuristic (0–100) with transparent penalties/bonuses you can tune.</p>
+    </section>
+
+    <section class="results" id="results"></section>
+
+    <div class="footer">Built as a single static file. Host anywhere (GitHub Pages works great). No backend, no keys.</div>
+  </div>
+
+  <script>
+    // ---------- Simple rule dictionaries ----------
+    const SEED_OILS = new Set(["canola oil","soybean oil","corn oil","cottonseed oil","grapeseed oil","sunflower oil","safflower oil","rapeseed oil","vegetable oil","margarine"]);
+    const GLUTEN_GRAINS = new Set(["wheat","barley","rye","spelt","farro","semolina","bulgur","seitan","triticale","malt","couscous"]);
+    const ALL_GRAINS = new Set([...GLUTEN_GRAINS, "oats","rice","corn","quinoa","millet","sorghum","amaranth","buckwheat"]);
+    const ADDED_SUGARS = new Set(["sugar","brown sugar","cane sugar","corn syrup","hfcs","dextrose","maltose","glucose","fructose","maple syrup","honey","agave"]);
+    const ULTRA_HINTS = new Set(["instant","powdered","flavored","artificial","emulsifier","maltodextrin","modified starch","hydrogenated"]);
+
+    const norm = s => (s||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
+
+    function containsAny(set, text){
+      const t = " " + norm(text) + " ";
+      for (const item of set){
+        if (t.includes(" " + item + " ")) return true;
+      }
+      return false;
+    }
+    function countHits(set, text){
+      const t = " " + norm(text) + " ";
+      let c = 0; for (const item of set){ if (t.includes(" " + item + " ")) c++; }
+      return c;
+    }
+
+    function healthScore(ingredientsText, flags){
+      let score = 100;
+      const badges = [];
+      if (flags.avoidSeedOils && containsAny(SEED_OILS, ingredientsText)){ score -= 25; badges.push("Contains seed oils"); }
+      if (flags.glutenFree && containsAny(GLUTEN_GRAINS, ingredientsText)){ score -= 25; badges.push("Contains gluten"); }
+      if (flags.grainFree && containsAny(ALL_GRAINS, ingredientsText)){ score -= 20; badges.push("Contains grains"); }
+      const sugarHits = countHits(ADDED_SUGARS, ingredientsText); if (sugarHits){ score -= Math.min(20, 5*sugarHits); badges.push("Added sugar"); }
+      const ultraHits = countHits(ULTRA_HINTS, ingredientsText); if (ultraHits){ score -= Math.min(15, 3*ultraHits); badges.push("Ultra-processed hints"); }
+
+      // small bonus for nutrient-dense items
+      const bonusKeys = ["olive oil","avocado","spinach","kale","broccoli","salmon","beans","lentils","almond","walnut","chia","flax"];
+      if (bonusKeys.some(k => norm(ingredientsText).includes(k))) { score += 5; badges.push("Nutrient-dense ingredients"); }
+
+      return { score: Math.max(0, Math.min(100, score)), badges: [...new Set(badges)] };
+    }
+
+    // ---------- Simple offline recipe generator ----------
+    const templates = [
+      {name: "Sheet-Pan", steps: ["Preheat oven to 425°F (220°C).","Toss chopped ingredients with oil + salt/pepper.","Roast 18–25 min until browned."]},
+      {name: "Stir-Fry", steps: ["Heat pan on high.","Stir-fry aromatics in oil.","Add main items; cook 5–8 min; season."]},
+      {name: "Salad Bowl", steps: ["Chop veggies + protein.","Whisk oil + acid + salt.","Toss together."]},
+      {name: "Skillet Toss", steps: ["Sauté aromatics.","Add main items; cook until tender.","Finish with herbs/lemon."]},
+      {name: "Omelet/Scramble", steps: ["Beat eggs with salt.","Cook filling 2–3 min; add eggs.","Fold and finish."]}
+    ];
+
+    function groupInto(arr, size){ const out=[]; for(let i=0;i<arr.length;i+=size){ out.push(arr.slice(i,i+size)); } return out; }
+
+    function simpleComboRecipes(pantry, catalog, n){
+      const pool = [...new Set([...pantry, ...catalog])].filter(Boolean);
+      const chunks = groupInto(pool, 6);
+      const picks = [];
+      for (let i=0; i<chunks.length && picks.length<n; i++){
+        const ing = chunks[i];
+        const tpl = templates[i % templates.length];
+        picks.push({
+          title: `${tpl.name} #${i+1}`,
+          ingredients: ing,
+          steps: tpl.steps,
+          notes: "Heuristic combo (no AI)"
+        });
+      }
+      if (picks.length===0){
+        picks.push({
+          title:"Starter Salad",
+          ingredients:["mixed greens","olive oil","lemon","salt","pepper"],
+          steps:["Toss and serve."],
+          notes:"Default"
+        });
+      }
+      return picks.slice(0, n);
+    }
+
+    // ---------- UI wiring ----------
+    const el = id => document.getElementById(id);
+    const catalogInput = el("catalogInput");
+    const pantryInput  = el("pantryInput");
+    const avoidSeedOils = el("avoidSeedOils");
+    const glutenFree = el("glutenFree");
+    const grainFree = el("grainFree");
+    const countSel = el("count");
+    const generateBtn = el("generateBtn");
+    const results = el("results");
+    const downloadJsonBtn = el("downloadJson");
+    const downloadCsvBtn = el("downloadCsv");
+
+    let lastData = [];
+
+    function renderTable(rows){
+      if (!rows.length){
+        results.innerHTML = '<div class="card"><p class="muted">No results yet. Click “Generate & Rank”.</p></div>';
+        return;
+      }
+      const rowsHtml = rows.map(r => {
+        const scoreClass = r.score >= 75 ? 'good' : (r.score < 50 ? 'bad' : '');
+        const badges = r.badges.map(b => `<span class="badge">${b}</span>`).join('') || '<span class="muted">—</span>';
+        const ing = r.ingredients.join(", ");
+        const steps = r.steps.map((s,i)=>`${i+1}. ${s}`).join("<br>");
+        return `
+          <tr>
+            <td><div style="font-weight:600">${r.title}</div><div class="muted">${r.notes||""}</div></td>
+            <td class="score ${scoreClass}">${r.score}</td>
+            <td>${badges}</td>
+            <td>
+              <details>
+                <summary>View</summary>
+                <div style="margin-top:8px">
+                  <strong>Ingredients:</strong> ${ing || "—"}<br><br>
+                  <strong>Steps:</strong><br>${steps || "—"}
+                </div>
+              </details>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      results.innerHTML = `
+        <div class="card">
+          <h2 style="margin-bottom:8px">📊 Ranked Recipes</h2>
+          <table>
+            <thead><tr><th>Recipe</th><th>Score</th><th>Badges</th><th>Details</th></tr></thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function toCSV(arr){
+      const headers = ["title","score","badges","ingredients","steps","notes"];
+      const esc = s => `"${String(s).replace(/"/g,'""')}"`;
+      const lines = [headers.join(",")];
+      for (const r of arr){
+        lines.push([
+          esc(r.title),
+          r.score,
+          esc(r.badges.join(" | ")),
+          esc(r.ingredients.join(" | ")),
+          esc(r.steps.join(" | ")),
+          esc(r.notes||"")
+        ].join(","));
+      }
+      return lines.join("\n");
+    }
+
+    function download(filename, content, mime){
+      const blob = new Blob([content], {type: mime});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    generateBtn.addEventListener("click", () => {
+      const catalog = catalogInput.value.split("\n").map(s=>s.trim()).filter(Boolean);
+      const pantry  = pantryInput.value.split("\n").map(s=>s.trim()).filter(Boolean);
+      const flags = {
+        avoidSeedOils: avoidSeedOils.checked,
+        glutenFree: glutenFree.checked,
+        grainFree: grainFree.checked
+      };
+      const n = parseInt(countSel.value, 10) || 4;
+
+      const recipes = simpleComboRecipes(pantry, catalog, n);
+      const scored = recipes.map(r => {
+        const ingText = r.ingredients.join(", ");
+        const s = healthScore(ingText, flags);
+        return { ...r, score: s.score, badges: s.badges };
+      }).sort((a,b)=>b.score-a.score);
+
+      lastData = scored;
+      renderTable(scored);
+      downloadJsonBtn.disabled = downloadCsvBtn.disabled = scored.length === 0;
+    });
+
+    downloadJsonBtn.addEventListener("click", ()=>{
+      download("recipes_ranked.json", JSON.stringify(lastData, null, 2), "application/json");
+    });
+    downloadCsvBtn.addEventListener("click", ()=>{
+      download("recipes_ranked.csv", toCSV(lastData), "text/csv");
+    });
+
+    // Initial placeholder state
+    renderTable([]);
+  </script>
+</body>
+</html>
